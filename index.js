@@ -1,4 +1,4 @@
-const { KiviPlugin } = require('@kivibot/core')
+const { KiviPlugin, segment} = require('@kivibot/core')
 
 const fs = require('fs')
 const { version } = require('./package.json')
