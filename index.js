@@ -68,8 +68,13 @@ plugin.onMounted(async (bot) => {
     };
 
     // 是否将撤回消息发送至群聊
-    if(config.sendToGroup){
-      await bot.sendGroupMsg(event.group_id, recall_msg);
+    if (config.sendToGroup) {
+      const message = [
+        segment.at(event.user_id),
+        `撤回了:\n`,
+      ]
+      message.push.apply(message, recall_msg);
+      await bot.sendGroupMsg(event.group_id, message);
     }
 
     // 撤回的消息是否发给 mainAdmin
