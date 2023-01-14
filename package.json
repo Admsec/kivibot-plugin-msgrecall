@@ -1,0 +1,23 @@
+{
+  "name": "kivibot-plugin-msgrecall",
+  "version": "1.0.0",
+  "description": "kivibot 的无数据库群聊反撤回插件(可以单发给管理员，让我康康撤回了什么好康的！！)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Admsec/kivibot-plugin-msgrecall.git"
+  },
+  "keywords": [
+    "['kivibot'",
+    "'kivibot-plugin']"
+  ],
+  "author": "Admsec <1447007223@qq.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Admsec/kivibot-plugin-msgrecall/issues"
+  },
+  "homepage": "https://github.com/Admsec/kivibot-plugin-msgrecall#readme"
+}
