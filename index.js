@@ -1,7 +1,7 @@
 const { KiviPlugin } = require('@kivibot/core')
 
 const fs = require('fs')
-const { version } = require('../package.json')
+const { version } = require('./package.json')
 const plugin = new KiviPlugin('群消息反撤回', version)
 
 const config = { enableGroupList: [], sendToGroup: true, sendToMainAdmin: true}

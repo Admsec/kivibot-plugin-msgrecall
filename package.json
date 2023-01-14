@@ -1,6 +1,6 @@
 {
   "name": "kivibot-plugin-msgrecall",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "kivibot 的无数据库群聊反撤回插件(可以单发给管理员，让我康康撤回了什么好康的！！)",
   "main": "index.js",
   "scripts": {
