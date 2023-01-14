@@ -38,8 +38,8 @@ plugin.onMounted(async (bot) => {
     }
 
     // 捕捉错误
-    if(recall_msg == undefined) {
-      plugin.throwPluginError("没有找到此撤回消息，忽略")
+    if(recall_msg == undefined || event.user_id == bot.uin) {
+      plugin.throwPluginError("没有找到此撤回消息或是机器人撤回的消息，忽略")
       return;
     };
 
