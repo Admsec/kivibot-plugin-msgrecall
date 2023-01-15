@@ -1,6 +1,5 @@
 const { KiviPlugin,segment } = require('@kivibot/core')
 
-const fs = require('fs')
 const { version } = require('./package.json')
 const plugin = new KiviPlugin('群消息反撤回', version)
 
@@ -15,13 +14,11 @@ plugin.onMounted(async (bot) => {
    * message 撤回的消息
    */
   let data = new Array();
-  let mid, message, nickname;
+  let mid, message;
   plugin.onGroupMessage((event) => {
     mid = event.message_id;
     message = event.message;
-    nickname = event.sender.nickname;
-
-    data.push({"message_id": mid, "message": message, "nickname": nickname})
+    data.push({"message_id": mid, "message": message})
   })
   //** 每隔两分钟清理已经不能撤回的消息 */
   plugin.cron("0 */2 * * * *", () => data.shift())
@@ -32,16 +29,15 @@ plugin.onMounted(async (bot) => {
     let recall_msg;
     // 先遍历数组 data
     for(let i = 0; i < data.length;i++){
-      if(data[i]['message_id'] === mid){
+      if(data[i]['message_id'] === event.message_id){
         recall_msg = data[i]['message'];
-        nickname = data[i]['nickname'];
         break;
       }
     }
 
     // 捕捉错误
     if(recall_msg == undefined || event.user_id == bot.uin) {
-      plugin.logger.warn("没有找到此撤回消息或是机器人撤回的消息，忽略")
+      plugin.logger.warn("忽略，原因：1.没有找到此撤回消息;2.是机器人自己的消息")
       return;
     };
 
@@ -60,9 +56,12 @@ plugin.onMounted(async (bot) => {
     {
       let msg = `--群消息反撤回--\n群聊: ${event.group_id}\n用户: ${event.user_id}`
       if(config.sendForwardMsg){
+        // 获取网名
+        let friendInfo = await bot.getStrangerInfo(event.user_id);
+        // 合并转发
         let list = [
-          {message: msg, user_id: event.user_id, nickname: nickname},
-          {message: recall_msg, user_id: event.user_id, nickname: nickname}
+          {message: msg, user_id: event.user_id, nickname: friendInfo.nickname},
+          {message: recall_msg, user_id: event.user_id, nickname: friendInfo.nickname}
         ];
         let forwardMsg = await bot.makeForwardMsg(list)
         await bot.sendPrivateMsg(plugin.mainAdmin, forwardMsg)
