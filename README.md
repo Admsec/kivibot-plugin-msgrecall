@@ -26,7 +26,7 @@ kivibot 的无数据库群聊反撤回插件(可以单发给管理员，让我�
   "sendToGroup": true,
   // 是否偷偷把撤回的消息发给管理员(如有多个管理员则发给第一个)
   "sendToMainAdmin": true,
-  // 私聊是否合并转发(1.1.3新增)
+  // 私聊是否合并转发(1.1.4新增)
   "sendForwardMsg": true
 }
 
