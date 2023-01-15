@@ -4,23 +4,24 @@ const fs = require('fs')
 const { version } = require('./package.json')
 const plugin = new KiviPlugin('群消息反撤回', version)
 
-const config = { enableGroupList: [], sendToGroup: true, sendToMainAdmin: true}
+const config = { enableGroupList: [], sendToGroup: true, sendToMainAdmin: true, sendForwardMsg: true}
 
 plugin.onMounted(async (bot) => {
 
   plugin.saveConfig(Object.assign(config, plugin.loadConfig()))
   /**
    * 保存符合条件的每一条群聊的消息
+   * mid 该消息的 message_id
+   * message 撤回的消息
    */
   let data = new Array();
+  let mid, message, nickname;
   plugin.onGroupMessage((event) => {
-    /**
-     * mid 该消息的 message_id
-     * message 撤回的消息
-     */
     mid = event.message_id;
     message = event.message;
-    data.push({"message_id": mid, "message": message})
+    nickname = event.sender.nickname;
+
+    data.push({"message_id": mid, "message": message, "nickname": nickname})
   })
   //** 每隔两分钟清理已经不能撤回的消息 */
   plugin.cron("0 */2 * * * *", () => data.shift())
@@ -33,6 +34,7 @@ plugin.onMounted(async (bot) => {
     for(let i = 0; i < data.length;i++){
       if(data[i]['message_id'] === mid){
         recall_msg = data[i]['message'];
+        nickname = data[i]['nickname'];
         break;
       }
     }
@@ -56,9 +58,18 @@ plugin.onMounted(async (bot) => {
     // 撤回的消息是否发给 mainAdmin
     if(config.sendToMainAdmin && event.user_id != bot.uin)
     {
-      msg = `--群消息反撤回--\n群聊: ${event.group_id}\n用户: ${event.user_id}`
-      await bot.sendPrivateMsg(plugin.mainAdmin, msg)
-      setTimeout(()=>{bot.sendPrivateMsg(plugin.mainAdmin, recall_msg)}, 1000)
+      let msg = `--群消息反撤回--\n群聊: ${event.group_id}\n用户: ${event.user_id}`
+      if(config.sendForwardMsg){
+        let list = [
+          {message: msg, user_id: event.user_id, nickname: nickname},
+          {message: recall_msg, user_id: event.user_id, nickname: nickname}
+        ];
+        let forwardMsg = await bot.makeForwardMsg(list)
+        await bot.sendPrivateMsg(plugin.mainAdmin, forwardMsg)
+      } else {
+        await bot.sendPrivateMsg(plugin.mainAdmin, msg)
+        setTimeout(()=>{bot.sendPrivateMsg(plugin.mainAdmin, recall_msg)}, 1000)
+      }
     }
 
   })
