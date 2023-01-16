@@ -19,9 +19,9 @@ plugin.onMounted(async (bot) => {
     mid = event.message_id;
     message = event.message;
     data.push({"message_id": mid, "message": message})
+    //** 每隔两分钟清理已经不能撤回的消息 */
+    setTimeout(()=>data.shift(), 120000)
   })
-  //** 每隔两分钟清理已经不能撤回的消息 */
-  plugin.cron("0 */2 * * * *", () => data.shift())
 
   //** 群聊消息反撤回 */
   plugin.on("notice.group.recall", async event => {
